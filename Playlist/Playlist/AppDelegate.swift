@@ -2,8 +2,8 @@
 //  AppDelegate.swift
 //  Playlist
 //
-//  Created by Tetiana Babycheva on 5/24/17.
-//  Copyright © 2017 babycheva. All rights reserved.
+//  Created by Bradley GIlmore on 5/31/17.
+//  Copyright © 2017 Bradley Gilmore. All rights reserved.
 //
 
 import UIKit
