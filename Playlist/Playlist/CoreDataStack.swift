@@ -1,27 +1,30 @@
 //
 //  CoreDataStack.swift
-//  Playlist
+//  PlaylistNSUserDefaults
 //
-//  Created by Bradley GIlmore on 5/31/17.
-//  Copyright © 2017 Bradley Gilmore. All rights reserved.
+//  Created by Bradley GIlmore on 4/5/17.
+//  Copyright © 2017 DevMountain. All rights reserved.
 //
 
 import Foundation
 import CoreData
 
-enum CoreDataStack {
+class CoreDataStack {
     
     static let container: NSPersistentContainer = {
         
-        let appName = Bundle.main.object(forInfoDictionaryKey: (kCFBundleNameKey as String)) as! String
-        let container = NSPersistentContainer(name: appName)
-        container.loadPersistentStores() { (storeDescription, error) in
+        let container = NSPersistentContainer(name: "Playlist")
+        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
-        }
+        })
+        
         return container
     }()
     
-    static var context: NSManagedObjectContext { return container.viewContext }
+    static var context: NSManagedObjectContext {
+        return container.viewContext
+    }
+    
 }

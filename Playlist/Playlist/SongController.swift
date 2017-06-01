@@ -2,18 +2,23 @@
 //  SongController.swift
 //  Playlist
 //
-//  Created by Bradley GIlmore on 5/31/17.
-//  Copyright © 2017 Bradley Gilmore. All rights reserved.
+//  Created by James Pacheco on 5/4/16.
+//  Copyright © 2016 DevMountain. All rights reserved.
 //
 
 import Foundation
 
 class SongController {
     
-    static func createSong(withName name: String, artist: String, playlist: Playlist) {
-        let song = Song(title: name, artistName: artist)
-        PlaylistController.shared.add(song: song, toPlaylist: playlist)
-
-    }
+	static func create(songWithName name: String, artist: String, playlist: Playlist) {
+        let _ = Song(name: name, artist: artist, playlist: playlist)
+        PlaylistController.sharedController.saveToPersistentStore()
+	}
     
+    static func delete(song: Song){
+        if let moc = song.managedObjectContext {
+            moc.delete(song)
+            PlaylistController.sharedController.saveToPersistentStore()
+        }
+    }
 }

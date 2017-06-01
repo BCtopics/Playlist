@@ -1,101 +1,45 @@
 //
 //  PlaylistController.swift
 //  Playlist
-
-//  Created by Bradley GIlmore on 5/31/17.
-//  Copyright © 2017 Bradley Gilmore. All rights reserved.
+//
+//  Created by James Pacheco on 5/4/16.
+//  Copyright © 2016 DevMountain. All rights reserved.
 //
 
 import Foundation
+import CoreData
 
 class PlaylistController {
+    fileprivate static let PlaylistsKey = "playlists"
     
-    static let shared = PlaylistController()   // Instance of a Playlist Controller
+    static let sharedController = PlaylistController()
     
-    private let playlistsKey = "playlists"  // Create a constant to prevent human error of mistyping create constants
-    
-    var playlists: [Playlist] = []
-    //these playlists are one source of truth used throughout our app
-    
-    
-    init() {
-        loadFromPersistentStore()
+    func create(playlistWithName name: String){
+        let _ = Playlist(name: name)
     }
-    
-    // CRUD
-    
-    func createPlaylist(withName name: String) {
-        
-        let playlist = Playlist(name: name)
-        
-        self.playlists.append(playlist)
-        
-        saveToPersistentStore()
+	
+    func delete(playlist: Playlist) {
+        if let moc = playlist.managedObjectContext {
+            moc.delete(playlist)
+            saveToPersistentStore()
+        }
     }
-    
-    func deletePlaylist(playlist: Playlist) {
- 
-    // Delete the instance of the playlist from playlist array (self.playlists)
-    }
-    
-    func add(song: Song, toPlaylist playlist: Playlist) {
-        
-        playlist.songs.append(song)
-        
-        saveToPersistentStore()
-        
-    }
-    
+	// MARK: Persistence
+	
     func saveToPersistentStore() {
+		let moc = CoreDataStack.context
         
-        //Turn the array of Playlist objects into an array of dictionaryRepresentations that can be stored into UserDefaults
-        
-        var playlistDictionaries: [[String: Any]] = []
-        
-        for playlist in playlists {
-            
-            let dictionary = playlist.dictionaryRepresentation
-            
-            playlistDictionaries.append(dictionary)
-            
-            // same method using mapping:
-            //let playlistDictionaries2 = playlists.map({$0.dictionaryRepresentation})
-
+        do{
+            try moc.save()
+        } catch let error{
+            print("There was a problem saving to the persistent store: \(error)")
         }
-        
-         // Save our playlists to UserDefaults
-        UserDefaults.standard.set(playlistDictionaries, forKey: playlistsKey)
     }
-    
-    
-    func loadFromPersistentStore() {
-        
-        // calling an array of dictionaries from UserDefaults
-        
-        if let playlistDictionaries = UserDefaults.standard.object(forKey: playlistsKey) as? [[String: Any]] {
-            
-            var playlists: [Playlist] = []
-            
-            for playlistDictionary in playlistDictionaries {
-                
-                if  let playlist = Playlist(dictionary: playlistDictionary) { //unwrap an optional playlist
-                    
-                    playlists.append(playlist)
-                    
-                }
-            }
-           
-            self.playlists = playlists
-        }
+	
+	// MARK: Properties 
+	
+    var playlists: [Playlist] {
+    let request: NSFetchRequest<Playlist> = Playlist.fetchRequest()
+        return (try? CoreDataStack.context.fetch(request)) ?? []
     }
 }
-
-
-
-
-
-
-
-
-
-
